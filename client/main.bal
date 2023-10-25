@@ -238,3 +238,111 @@ function EmployeeMenu(string user) returns string|error{
 
       
 }
+// Function to get employee scores
+function EmployeeScores(string sup) returns string|error {
+    // Read the supervisor's name from the input parameter
+    string supervisor = sup;
+    string super = "\"" + supervisor;
+
+    // Construct a GraphQL document to fetch employee scores using the supervisor's name
+    string document = "{ EmployeeScores(super:" + super + "\")  }";
+
+    // Execute the GraphQL document and store the response
+    map<json> response = check graphqlClient->execute(document);
+    json|error resp = response.data.EmployeeScores;
+
+    io:println(resp);
+
+    // Prompt the user to enter 'X' to exit or return to the previous menu (SupervisorMenu)
+    string input = io:readln("Enter X to exit...");
+
+    if (input == "x") {
+        return SupervisorMenu(sup);
+    }
+
+    return SupervisorMenu(sup);
+}
+
+// Function to approve a Key Performance Indicator (KPI)
+function ApproveKPI(string user) returns string|error {
+    // Read the employee's ID, and the status for KPI approval
+    string empId = io:readln("Enter Employee id #");
+    string id = "\"" + empId;
+
+    string status = io:readln("Enter Status");
+    string Status = "\"" + status;
+
+    // Construct a GraphQL document to approve a KPI using employee ID and status
+    string document = "{ ApproveKPI(empId:" + id + "\",status:" + Status + "\") }";
+
+    // Execute the GraphQL document and store the response
+    map<json> response = check graphqlClient->execute(document);
+    json|error resp = response.data.ApproveKPI;
+
+    io:println(resp);
+
+    // Prompt the user to enter 'X' to exit or return to the previous menu (SupervisorMenu)
+    string input = io:readln("Enter X to exit...");
+
+    if (input == "x") {
+        return SupervisorMenu(user);
+    }
+
+    return SupervisorMenu(user);
+}
+
+// Function to update a Key Performance Indicator (KPI)
+function UpdateKPI(string user) returns string|error {
+    // Read the employee's ID, and the updated KPI
+    string empId = io:readln("Enter Employee id #");
+    string id = "\"" + empId;
+
+    string kpi = io:readln("Enter KPI");
+    string KPI = "\"" + kpi;
+
+    // Construct a GraphQL document to update a KPI using employee ID and the updated KPI value
+    string document = "{ updateKPI(empId:" + id + "\",KPI:" + KPI + "\") }";
+
+    // Execute the GraphQL document and store the response
+    map<json> response = check graphqlClient->execute(document);
+    json|error resp = response.data.ApproveKPI;
+
+    io:println(resp);
+
+    // Prompt the user to enter 'X' to exit or return to the previous menu (SupervisorMenu)
+    string input = io:readln("Enter X to exit...");
+
+    if (input == "x") {
+        return SupervisorMenu(user);
+    }
+
+    return SupervisorMenu(user);
+}
+
+// Function to grade a Key Performance Indicator (KPI)
+function gradeKPI(string user) returns string|error {
+    // Read the employee's ID, and the grade for the KPI
+    string empId = io:readln("Enter Employee id #");
+    string id = "\"" + empId;
+
+    string kpi = io:readln("Enter Grade");
+    string KPI = "\"" + kpi;
+
+    // Construct a GraphQL document to grade a KPI using employee ID and the grade value
+    string document = "{ gradeKPI(empId:" + id + "\",grade:" + KPI + "\") }";
+
+    // Execute the GraphQL document and store the response
+    map<json> response = check graphqlClient->execute(document);
+    json|error resp = response.data.gradeKPI;
+
+    io:println(resp);
+
+    // Prompt the user to enter 'X' to exit or return to the previous menu (SupervisorMenu)
+    string input = io:readln("Enter X to exit...");
+
+    if (input == "x") {
+        return SupervisorMenu(user);
+    }
+
+    return SupervisorMenu(user);
+}
