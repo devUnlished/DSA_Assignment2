@@ -74,4 +74,60 @@ service / on new graphql:Listener(9090) {
         }
         return "Failed to add the Objective";
     }
+remote function deleteDepartmentObjectives(string departmentId, string objectiveId) returns string|error {
+
+        var filter = {id: departmentId};
+        map<json> delObjective = <map<json>>{"$pull": {"objectives": {id: objectiveId}}};
+
+        int updatedCount = check db->update(delObjective, departmentCollection, databaseName, filter, true, false);
+
+        if updatedCount > 0 {
+            return string `${objectiveId} has been deleted successfully`;
+        }
+        return "Failed to updated";
+    }
+
+    resource function get employeeTotalScore(string staffNo) returns string|error {
+
+        var filter = {employee_staffNo: staffNo};
+        stream<KPI, error?> KPIrecord = check db->find(KPIcollection, databaseName, filter,{});
+
+        KPI[] records = check from var kpiRecord in KPIrecord select kpiRecord;
+
+        if records.length() > 0 {
+            return records[0].grade.toString();
+        }
+        return "N/A";
+    }
+
+    remote function assignSupervisor(string empStaffNo, string supStaffNo) returns string|error {
+
+        var filter = {employee_staffNo: empStaffNo};
+        map<json> assignSupervisor = <map<json>>{"$set": {"supervisor_staffNo": supStaffNo}};
+
+        int updatedCount = check db->update(assignSupervisor, KPIcollection, databaseName, filter, true, false);
+
+        if updatedCount > 0 {
+            return string `${empStaffNo} has been assigned to ${supStaffNo}`;
+        }
+        return "Failed to assign Supervisor";
+    }
+
+
+    remote function deleteKPI(string id) returns error|string {
+
+        var filter = {id: id};
+
+        mongodb:Error|int deleteItem = db->delete(KPIcollection, databaseName, filter, false);
+
+        if deleteItem is mongodb:Error {
+            return error("Failed to delete items");
+        } else {
+            if deleteItem > 0 {
+                return string `${id} deleted successfully`;
+            } else {
+                return string `Specified ID number does not Exist`;
+            }
+        }
+    }
 }
