@@ -169,4 +169,49 @@ remote function deleteDepartmentObjectives(string departmentId, string objective
         }
         return "Failed to grade the KPI";
     }
+  remote function createKPI(string id, string description, string employee_staffNo, string department_id) returns string|error {
+        map<json> doc = <map<json>>{id: id, description: description, employee_staffNo: employee_staffNo, department_id: department_id};
+        _ = check db->insert(doc, KPIcollection, "");
+        return string `${id} added successfully`;
+    }
+
+    remote function gradeSupervisor(string supStaffNo, string newGrade) returns string|error{
+
+        var filter = {staffNo: supStaffNo};
+        map<json> changeSupervisorGrade = <map<json>>{"$set": {"grade": newGrade}};
+
+        int updatedCount = check db->update(changeSupervisorGrade, userCollection, databaseName, filter, true, false);
+
+        if updatedCount > 0 {
+            return string `The grade of ID ${supStaffNo} has been successfully updated to ${newGrade}`;
+        }
+        return "Failed to grade your Supervisor";
+    }
+
+    resource function get getScore(string empStaffNo) returns string|error {
+
+        var filter = {employee_staffNo: empStaffNo};
+        stream<KPI, error?> KPIrecord = check db->find(KPIcollection, databaseName, filter,{});
+
+        KPI[] records = check from var userRecord in KPIrecord select userRecord;
+
+        if records.length() > 0 {
+            return records[0].grade.toString();
+        }
+        return "N/A";
+    }
+
+// Authentication funtions
+
+    resource function get login(string staffNo, string password) returns string|error {
+        var filter = {staffNo: staffNo, password: password};
+        stream<User, error?> retrievedUser = check db->find(userCollection, databaseName, filter, {});
+
+        User[] users = check from var userInfo in retrievedUser select userInfo;
+        if users.length() > 0 {
+            return users[0].role.toString();
+
+        } 
+            return error("User not found");
+    }
 }
