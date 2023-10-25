@@ -1,0 +1,60 @@
+type User {
+  id: ID!
+  firstName: String
+  lastName: String
+  jobTitle: String
+  position: String
+  role: String
+}
+
+type KPI {
+  id: ID!
+  name: String
+  value: Float
+  unit: String
+  employeeId: ID
+  score: Float
+}
+
+type DepartmentObjective {
+  id: ID!
+  name: String
+  contributionPercentage: Float
+}
+
+type Query {
+  users: [User]
+  user(id: ID!): User
+  kpis: [KPI]
+  kpi(id: ID!): KPI
+  departmentObjectives: [DepartmentObjective]
+  departmentObjective(id: ID!): DepartmentObjective
+}
+
+type Mutation {
+  createUser(
+    firstName: String!
+    lastName: String!
+    jobTitle: String!
+    position: String!
+    role: String!
+  ): User
+
+  createKPI(
+    name: String!
+    value: Float!
+    unit: String!
+    employeeId: ID!
+    score: Float
+  ): KPI
+
+  createDepartmentObjective(
+    name: String!
+    contributionPercentage: Float!
+  ): DepartmentObjective
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
