@@ -130,4 +130,43 @@ remote function deleteDepartmentObjectives(string departmentId, string objective
             }
         }
     }
+ remote function updateKPI(string id, string description,string grade, string employee_staffNo,string supervisor_staffNo, string department_id) returns string|error{
+        
+        var filter = {id: id};
+        map<json> changeKPI = <map<json>>{"$set": {"id": id, "description": description, "grade": grade, "employee_staffNo": employee_staffNo, "supervisor_staffNo": supervisor_staffNo, "department_id": department_id}};
+
+        int updatedCount = check db->update(changeKPI, KPIcollection, databaseName, filter, true, false);
+
+                if updatedCount > 0 {
+            return string `The update to ID ${id} was successfull`;
+        }
+        return "Failed Update";
+    }
+
+    resource function get employeeScore(string empStaffNo, string supStaffNo) returns string|error {
+
+        var filter = {employee_staffNo: empStaffNo, supervisor_staffNo: supStaffNo};
+        stream<KPI, error?> KPIrecord = check db->find(KPIcollection, databaseName, filter,{});
+
+        KPI[] records = check from var userRecord in KPIrecord
+            select userRecord;
+
+        if records.length() > 0 {
+            return records[0].grade.toString();
+        }
+        return "N/A";
+    }
+
+        remote function gradeKPI(string KPIid, string newGrade) returns string|error{
+        
+        var filter = {id: KPIid};
+        map<json> changeKPIgrade = <map<json>>{"$set": {"grade": newGrade}};
+
+        int updatedCount = check db->update(changeKPIgrade, KPIcollection, databaseName, filter, true, false);
+
+        if updatedCount > 0 {
+            return string `The grade of ID ${KPIid} has been successfully updated to ${newGrade}`;
+        }
+        return "Failed to grade the KPI";
+    }
 }
