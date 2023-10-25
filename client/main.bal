@@ -328,7 +328,7 @@ function gradeKPI(string user) returns string|error {
     string kpi = io:readln("Enter Grade");
     string KPI = "\"" + kpi;
 
-    // Construct a GraphQL document to grade a KPI using employee ID and the grade value
+    // Construct a graphQL document to grade a KPI using employee ID and the grade value
     string document = "{ gradeKPI(empId:" + id + "\",grade:" + KPI + "\") }";
 
     // Execute the GraphQL document and store the response
